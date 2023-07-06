@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客详情页</title>
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/detail.css">
+
+    <!-- 不要忘记引入 js 文件 -->
+    <!-- 引入 editor.md 的依赖 -->
+    <link rel="stylesheet" href="editor.md/css/editormd.min.css" />
+    <script src="js/jquery.min.js"></script>
+    <script src="editor.md/lib/marked.min.js"></script>
+    <script src="editor.md/lib/prettify.min.js"></script>
+    <script src="editor.md/editormd.js"></script>
+</head>
+<body>
+    <div class="nav">
+        <!-- 导航栏 -->
+        <img src="image/log2.jpeg" alt="this is a log">
+        <span class="title">Blog分享小站</span>
+        <span class="spacer"></span>
+        <a href="blog_center.html">博客中心</a>
+        <a href="blog_list.html">主页</a>
+        <a href="blog_edit.html">写博客</a>
+        <a href="javascript:logoutTag()">注销</a>
+    </div>
+
+    <!-- 版心部分 -->
+    <div class="container">
+        <!-- 左边信息栏 -->
+        <div class="left">
+            <div class="card">
+                <img src="image/log3.png" alt="this is a portrait" id="portrait">
+                <h3 id="username"></h3>
+                <a href="#">github</a>
+                <div class="count">
+                    <span>文章</span>
+                    <span>分类</span>
+                </div>
+                <div class="count">
+                    <span id="artCount"></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <!-- 右边栏 -->
+            <!-- 每个 .blog 就表示一篇博客的区域 -->
+            <div class="blog-content">
+                <!-- 博客的标题 -->
+                <h2></h2>
+                <!-- 博客的发布时间 -->
+                <div class="date"></div>
+                <!-- 博客的正文 -->
+                <div id="content" style="opacity: 40%">
+
+                </div>
+                <!-- <p>
+                    明天一定好好学习. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil at aspernatur, quasi est molestiae perspiciatis aut deserunt vero laudantium hic illo quas! Esse quam quo quibusdam debitis. Eius, pariatur reiciendis?
+                </p>
+                <p>
+                    明天一定好好学习. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil at aspernatur, quasi est molestiae perspiciatis aut deserunt vero laudantium hic illo quas! Esse quam quo quibusdam debitis. Eius, pariatur reiciendis?
+                </p>
+                <p>
+                    明天一定好好学习. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil at aspernatur, quasi est molestiae perspiciatis aut deserunt vero laudantium hic illo quas! Esse quam quo quibusdam debitis. Eius, pariatur reiciendis?
+                </p> -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 注销 a标签 页面跳转
+        function logoutTag() {
+            //alert("跳转页面")
+            $.ajax({
+                type: 'GET',
+                url: '/user/logout',
+                success: function(body) {
+                    if (body == -1) {
+                        alert("不存在该用户!")
+                    } else {
+                        alert("退出登录!")
+                        location.assign('blog_login.html');
+                    }
+                }
+            });
+        }
+
+        // 删除 a标签 页面跳转
+        function deleteTag() {
+            $.ajax({
+                type: 'GET',
+                url: 'delete' + location.search,
+                success: function(body) {
+                    if (body == -1) {
+                        alert("删除文章失败!")
+                    } else {
+                        alert("删除文章成功!")
+                        location.assign('blog_list.html');
+                    }
+                }
+            });
+        }
+
+        // 获取文章列表左侧个人信息
+        function getListLeftInfo() {
+            jQuery.ajax({
+                type: "POST",
+                url: "/user/bloginfo",
+                data: {},
+                success: function(body) {
+                    if (body != null && body.code == 200) {
+                        jQuery("#username").text(body.data.username);
+                        jQuery("#artCount").text(body.data.articleCount);
+                    } else {
+                        alert('获取博客列表失败!');
+                        location.assign('blog_login.html');
+                    }
+                }
+            });
+        }
+        // 一定不能忘记调用函数
+        getListLeftInfo();
+
+        // 获取博客详情
+        function getBlogDetail() {
+            jQuery.ajax({
+                type: "GET",
+                // 这里 location.search 的作用就是获取到当前的 查询字符串
+                // 形如 ?blogId=1
+                url: "/article/mydetail" + location.search,
+                data: {},
+                success: function(body) {
+                    // 根据 body 来构造页面
+                    // 1.构造标题
+                    let h2 = document.querySelector('.blog-content>h2');
+                    h2.innerHTML = body.data.title;
+                    // 2.构造发布日期
+                    let date = document.querySelector('.date');
+                    date.innerHTML = body.data.createtime;
+                    // 3.构造博客正文
+                    //let content = document.querySelector('#content');
+                    //content.innerHTML = blog.content;
+                    // 这里的显示内容需要使用 markdown 编辑器来渲染
+                    // 第一个参数对应 id=content 这个标签, 被渲染后的得到的 html 片段就会放到这个标签下
+                    editormd.markdownToHTML('content', {
+                        markdown: body.data.content
+                    });
+                }
+            });
+        }
+        getBlogDetail();
+
+
+        // 根据当前文章的 blog_id 查询到该文章的信息，并且让 rCount++
+        function updateReadCount() {
+            jQuery.ajax({
+                type: "POST",
+                url: "/article/update" + location.search,
+                data: {},
+                success: function(body) {
+                    
+                }
+            });
+        }
+        updateReadCount();
+    
+
+        
+        
+
+        
+
+    </script>
+</body>
+</html>

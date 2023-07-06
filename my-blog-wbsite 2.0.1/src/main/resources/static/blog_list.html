@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客主页</title>
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/list.css">
+
+    <script src="js/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="nav">
+        <!-- 导航栏 -->
+        <img src="image/log2.jpeg" alt="this is a log">
+        <span class="title">Blog分享小站</span>
+        <span class="spacer"></span>
+        <a href="blog_center.html">博客中心</a>
+        <a href="blog_list.html">我的主页</a>
+        <a href="blog_edit.html">写博客</a>
+        <a href="javascript:logoutTag()">注销</a>
+    </div>
+
+
+    <!-- 版心部分 -->
+    <div class="container">
+        <!-- 左边信息栏 -->
+        <div class="left">
+            <div class="card">
+                <img src="image/log3.png" alt="this is a portrait" id="portrait">
+                <h3 id="username"></h3>
+                <a href="#">github</a>
+                <div class="count">
+                    <span>文章</span>
+                    <span>分类</span>
+                </div>
+                <div class="count">
+                    <span id="artCount"></span>
+                    <span>1</span>
+                </div>
+            </div>
+        </div>
+        <div id="artDiv" class="right">
+            <!-- 右边栏 -->
+            <!-- 每个 .blog 就表示一篇博客的区域 -->
+            <!-- <div class="blog">
+                <div class="title">我的第一篇博客</div>
+                <div class="date">2022-07-11</div>
+                <div class="desc">
+                    明天一定好好学习. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil at aspernatur, quasi est molestiae perspiciatis aut deserunt vero laudantium hic illo quas! Esse quam quo quibusdam debitis. Eius, pariatur reiciendis?
+                </div>
+                <a href="#" class="detail">查看全文 &gt; &gt; </a>
+            </div> -->
+        </div>
+    </div>
+
+
+    <script>
+
+
+        // 获取文章列表左侧个人信息
+        function getListLeftInfo() {
+            jQuery.ajax({
+                type: "POST",
+                url: "/user/bloginfo",
+                data: {},
+                success: function (body) {
+                    if (body != null && body.code == 200) {
+                        jQuery("#username").text(body.data.username);
+                        jQuery("#artCount").text(body.data.articleCount);
+                    } else {
+                        alert('获取博客列表失败!');
+                        location.assign('blog_login.html');
+                    }
+                }
+            });
+        }
+        // 一定不能忘记调用函数
+        getListLeftInfo();
+
+        // 获取文章列表右侧信息
+        function getListRightInfo() {
+            jQuery.ajax({
+                type: "POST",
+                url: "/article/mylist",
+                data: {},
+                success: function (body) {
+                    if (body != null && body.code == 200 && body.data.length > 0) {
+                        // 有两种情况
+                        // 1.发表了文章
+                        // 2.一篇文章都没有
+
+                        // 当前用户发表了文章
+                        //let artListDiv = "";
+                        let rightDiv = document.querySelector('.right');
+                        for (let i = 0; i < body.data.length; i++) {
+                            // // 通过字符串拼接的方式来构造以一个个小的 div
+                            // let item = body.data[i];
+                            // artListDiv += '<div class="blog">';
+
+                            // artListDiv += '<div class="title">' + item.title + '</div>';
+                            // artListDiv += '<div class="date">' + item.createtime + '</div>';
+                            // artListDiv += '<div class="desc">'+ item.content + '</div>';
+                            // artListDiv += '<a href="blog_detail.html?id="';
+                            // artListDiv += item.id;
+                            // artListDiv += ' class="detail">查看全文 &gt; &gt; </a>';
+
+                            // artListDiv += '</div>';
+
+                            let blog = body.data[i];
+                            // 遍历 body, 构造出一个个的 div
+                            let blogDiv = document.createElement('div');
+                            blogDiv.className = 'blog';
+                            // 构造标题
+                            let titleDiv = document.createElement('div');
+                            titleDiv.className = 'title';
+                            titleDiv.innerHTML = blog.title;
+                            blogDiv.appendChild(titleDiv);
+                            // 构造发布时间
+                            let dateDiv = document.createElement('div');
+                            dateDiv.className = 'date';
+                            dateDiv.innerHTML = "发布时间: " + blog.createtime;
+                            blogDiv.appendChild(dateDiv);
+                            // 构造阅读量
+                            let rCount = document.createElement('div');
+                            rCount.className = 'date';
+                            rCount.innerHTML = "阅读量: " + blog.rcount;
+                            blogDiv.appendChild(rCount);
+                            // 构造博客摘要
+                            let abstract = document.createElement('div');
+                            abstract.className = 'desc';
+                            abstract.innerHTML = blog.content;
+                            blogDiv.appendChild(abstract);
+
+                            // 构造 a 标签
+                            // 查看全文a标签
+                            let a = document.createElement('a');
+                            a.className = 'detail';
+                            a.innerHTML = '查看全文 &gt;&gt;';
+                            // 这里的 a标签 点击之后要能够跳转到博客详情页
+                            // 因此这个跳转过程需要告诉服务器要访问的是哪篇博客的详情页
+                            a.href = 'blog_detail.html?id=' + blog.id;
+                            blogDiv.appendChild(a);
+
+                            // 修改a标签
+                            let update = document.createElement('a');
+                            update.className = 'detail';
+                            update.innerHTML = '修改 &gt;&gt;';
+                            // 这里的 a标签 点击之后要能够跳转到博客详情页
+                            // 因此这个跳转过程需要告诉服务器要访问的是哪篇博客的详情页
+                            update.href = 'javascript:myUpdate(' + blog.id + ')';
+                            blogDiv.appendChild(update);
+
+                            // 删除a标签
+                            let del = document.createElement('a');
+                            del.className = 'detail';
+                            del.innerHTML = '删除 &gt;&gt;';
+                            // 这里的 a标签 点击之后要能够跳转到博客详情页
+                            // 因此这个跳转过程需要告诉服务器要访问的是哪篇博客的详情页
+                            del.href = 'javascript:myDel(' + blog.id + ')';
+                            blogDiv.appendChild(del);
+
+                            // 最后要把 blogDiv 挂到 DOM 树上
+                            rightDiv.appendChild(blogDiv);
+                        }
+                        //jQuery("#artDiv").html(artListDiv);
+                    } else {
+                        // let myDiv = document.createElement('div');
+                        // myDiv.className = 'title';
+                        // myDiv.innerHTML = "还没有发布任何一篇文章哦~ 去写一篇吧~";
+                        // rightDiv.appendChild(myDiv);
+                        alert("还没有发布任何一篇文章哦~ 去写一篇吧~");
+                    }
+                }
+            });
+        }
+        // 一定不能忘记调用函数
+        getListRightInfo();
+
+        // 删除文章
+        function myDel(id) {
+            if (confirm("确认是否删除？")) {
+                // 删除文章
+                jQuery.ajax({
+                    url: "/article/del",
+                    type: "POST",
+                    data: { "aid": id },
+                    success: function (body) {
+                        if (body != null && body.code == 200 && body.data == 1) {
+                            alert("删除成功!");
+                            // 刷新当前页面
+                            location.href = location.href;
+                        } else {
+                            alert("删除失败, 请重试!");
+                        }
+                    }
+                });
+            }
+        }
+
+        // 注销功能
+        function logoutTag() {
+            if (confirm("确认注销?")) {
+
+                jQuery.ajax({
+                    type: "POST",
+                    url: "/user/logout",
+                    data: {},
+                    success: function (body) {
+                        if (body != null && body.code == 200) {
+                            location.href = "blog_login.html";
+                        }
+                    }
+                });
+            }
+        }
+
+
+        
+
+        // function changeUserName(username) {
+        //     let h3 = document.querySelector('.card>h3');
+        //     h3.innerHTML = username;
+        // }
+
+        // function changeUserPortrait(userId) {
+        //     var portrait = document.getElementById("portrait");
+        //     if (userId == 1) {
+        //         portrait.src = "image/亚索.jpeg";
+        //     } else if (userId == 2) {
+        //         portrait.src = "image/李青.jpeg";
+        //     }
+        // }
+    </script>
+</body>
+
+</html>

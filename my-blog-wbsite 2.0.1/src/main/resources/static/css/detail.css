@@ -1,0 +1,22 @@
+ .blog-content h2 {
+    text-align: center;
+    padding: 20px 0;
+ }
+
+ .blog-content .date {
+    padding-top: 10px;
+    padding-bottom: 30px;
+    text-align: center;
+    color: rgb(62, 148, 98);
+ }
+
+ .blog-content {
+    padding: 5px 0;
+    text-indent: 2em;
+    color: #333;
+    font-weight: 500;
+ }
+
+ .blog-content {
+    padding: 20px;
+}

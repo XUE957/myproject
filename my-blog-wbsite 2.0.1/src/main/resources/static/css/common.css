@@ -1,0 +1,132 @@
+/* 放置一些公共的样式. 比如导航栏 */
+
+/* 清除浏览器默认样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 给整体页面设置一个高度, 让页面和浏览器窗口一样高 */
+body,
+html {
+    height: 100%;
+
+    /* 这里设置背景图 */
+    background-image: url(../image/background.jpeg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* 给导航栏设置样式 */
+.nav {
+    width: 100%;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 给 logo 设置样式 */
+.nav img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
+.nav .title {
+    font-size: 16px;
+    font-style: normal;
+}
+
+.nav .spacer {
+    width: 70%;
+}
+
+.nav a {
+    color: white;
+    padding: 0 10px;
+    text-decoration-line: none;
+}
+
+.nav a:hover {
+    color: rgba(70, 40, 193, 0.7);
+}
+
+
+/* 版心的样式. 这个内容也是要多个页面引用 */
+.container {
+    width: 1000px;
+    height: calc(100% - 50px);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container .left {
+    width: 200px;
+    height: 100%;
+}
+
+.container .right {
+    width: 790px;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.4);
+
+    /* 如果内容溢出 就加上滚动条 */
+    overflow: auto;
+}
+
+/*定义滚动条样式（高宽及背景）*/
+::-webkit-scrollbar {
+    width: 13px;   
+    background: rgb(87,111,149, 0.1);
+}
+
+/*定义滑块 样式*/
+::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    height: 100px;    
+    background-color: rgb(167,174,183, 0.6);
+}
+
+/* 展示用户信息的卡片 */
+.card {
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 30px;
+}
+
+/* 用户头像 */
+.card img {
+    width: 120px;
+    height: 90px;
+    border-radius: 20px;
+    margin: 0 20px;
+}
+
+/* 用户名 */
+.card h3 {
+    text-align: center;
+    padding: 10px;
+}
+
+/* github 链接 */
+.card a {
+    display: block;
+    color: #888;
+    text-align: center;
+    padding: 10px;
+    text-decoration-line: none;
+}
+
+.card .count {
+    display: flex;
+    justify-content: space-around;
+    padding: 5px;
+}

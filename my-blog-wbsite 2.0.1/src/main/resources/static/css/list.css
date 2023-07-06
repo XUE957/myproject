@@ -1,0 +1,47 @@
+/* 这个文件专门放博客列表页的样式 */
+
+.blog {
+    width: 100%;
+    padding: 20px;
+}
+
+.blog .title {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.blog .date {
+    text-align: center;
+    padding: 20px;
+    color:rgb(62, 148, 98);
+}
+
+.blog .desc {
+    /* 首行缩进两个字 */
+    text-indent: 2em;
+    color: #333;
+    font-weight: 500;
+}
+
+/* 修饰 a 标签 */
+.blog .detail {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    border: 2px solid rgb(4,31,20);
+    /* 设置边框大小 */
+    width: 140px;
+    height: 40px;
+    /* 设置按钮水平居中 */
+    margin: 10px auto;
+    margin-top: 50px;
+
+    color: rgb(4,31,20);
+    text-decoration-line: none;
+}
+
+/* 设置鼠标悬停的效果, 让背景和文字反色 */
+.blog .detail:hover {
+    color: white;
+}

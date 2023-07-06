@@ -1,0 +1,45 @@
+# 生产环境的配置文件
+
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 1800 # 默认单位是秒
+
+# 配置数据库连接
+spring:
+#  jackson:
+#    date-format: "yyyy-MM-dd HH:mm:ss"
+#    time-zone: "GMT+8"
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/blog?characterEncoding=utf8&useSSL=false
+    username: root
+    password: 1259
+    # 驱动名称, 固定写法
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  # 配置 redis
+  redis:
+    database: 1 # 对应 redis 中的 DB编号
+    port: 6379
+    host: 127.0.0.1
+    #host: 43.142.11.118
+  # 配置 session
+  session:
+    store-type: redis # 指定你的存储类型
+    redis:
+      flush-mode: on_save
+      namespace: spring:session # 存储在 redis 中的包名
+
+
+# 配置 mybatis xml 保存路径
+mybatis:
+  mapper-locations: classpath:mapper/**Mapper.xml
+  configuration: # 配置 mybatis 在控制台打印 sql 语句
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 设置日志级别
+logging:
+  level:
+    com:
+      example:
+        demo: debug

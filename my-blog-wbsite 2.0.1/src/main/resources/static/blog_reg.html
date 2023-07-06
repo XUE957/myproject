@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册页面</title>
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/reg.css">
+    <script src="js/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="nav">
+        <!-- 导航栏 -->
+        <img src="image/log2.jpeg" alt="this is a log">
+        <span class="title">Blog分享网站</span>
+        <span class="spacer"></span>
+        <a href="blog_list.html">主页</a>
+        <a href="blog_edit.html">写博客</a>
+        <a href="#" style="display: none">注销</a>
+    </div>
+
+    <!-- 登录页面的页面容器, 为了和其他页面样式区分开, 使用不同的类名 -->
+    <div class="container">
+        <div class="reg-form">
+            <h1>注册</h1>
+            <input type="text" id="username" placeHolder="用户名">
+            <input type="password" id="password" placeholder="密码">
+            <input type="password" id="password2" placeholder="确认密码">
+            <div class="login">
+                已注册?
+                <a href="blog_login.html">点击登录</a>
+            </div>
+            <input type="submit" value="注册" class="button" onclick="register()">
+        </div>
+    </div>
+
+    <script>
+        function register() {
+            // 1.对输入的内容进行非空和正确性效验
+            let username = jQuery("#username");
+            let password = jQuery("#password");
+            let password2 = jQuery("#password2");
+            
+            if (jQuery.trim(username.val()) == "") {
+                alert("请输入用户名!");
+                username.focus();
+                return;
+            }
+            if (jQuery.trim(password.val()) == "") {
+                alert("请输入密码!");
+                password.focus();
+                return;
+            }
+            if (jQuery.trim(password2.val()) == "") {
+                alert("请输入确认密码!");
+                password2.focus();
+                return;
+            }
+            // // 密码强度效验(密码的长度必须大于 8)
+            // if (password.val().length < 8) {
+            //     alert("抱歉: 密码强度太低,密码位数必须大于等于8位!");
+            //     password.focus();
+            //     return;
+            // }
+            if (password.val() != password2.val()) {
+                alert("抱歉：两次输入的密码不一致，请检查！");
+                password.focus();
+                return;
+            }
+            // 2.发送 ajax 请求到后端
+            jQuery.ajax({
+                type: "POST",
+                url: "/user/reg",
+                data: {
+                    "username": username.val(),
+                    "password": password.val()
+                },
+                success: function (body) {
+                    if (body != null && body.data == 1 && body.code == 200) {
+                        // 注册成功
+                        alert('注册成功!');
+                        // 跳转到博客登录页
+                        location.href = 'blog_login.html';
+                    } else {
+                        // 注册失败
+                        alert(body.msg);
+                    }
+                }
+            });
+        }
+    </script>
+
+
+</body>
+
+</html>

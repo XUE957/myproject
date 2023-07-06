@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.UserMapper">
+
+    <insert id="reg">
+        insert into userinfo(username, password) values(#{username}, #{password})
+    </insert>
+
+    <select id="getUserByName" resultType="com.example.demo.model.UserInfo">
+        select * from userinfo where username=#{username}
+    </select>
+
+    <select id="getUserinfoByUid" resultType="com.example.demo.model.vo.UserInfoVO">
+        select u.*, a.* from userinfo u left join articleinfo a
+        on u.id=a.uid where u.id=#{uid}
+    </select>
+
+</mapper>

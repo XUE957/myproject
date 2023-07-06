@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客登录页</title>
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/login.css">
+    <script src="js/jquery.min.js"></script>
+</head>
+<body>
+    <div class="nav">
+        <!-- 导航栏 -->
+        <img src="image/log2.jpeg" alt="this is a log">
+        <span class="title">Blog分享网站</span>
+        <span class="spacer"></span>
+        <a href="blog_center.html">博客中心</a>
+        <a href="blog_list.html">我的主页</a>
+        <a href="blog_edit.html">写博客</a>
+        <a href="#" style="display: none">注销</a>
+    </div>
+
+    <!-- 登录页面的页面容器, 为了和其他页面样式区分开, 使用不同的类名 -->
+    <div class="container">
+        <div class="login-form">
+            <h2>登录</h2>
+            <input type="text" id="username" placeHolder="用户名">
+            <input type="password" id="password" placeholder="密码">
+            <div class="reg">
+                未注册?
+                <a href="blog_reg.html">点击注册</a>
+            </div>
+            <input type="submit" value="登录" class="button" onclick="mySubmit()">
+        </div>
+    </div>
+
+    <script>
+        function mySubmit() {
+            // 1.检验参数
+            let username = jQuery("#username");
+            let password = jQuery("#password");
+            if (jQuery.trim(username.val()) == "") {
+                alert("请输入用户名!");
+                password.focus();
+                return;
+            }
+            if (jQuery.trim(password.val()) == "") {
+                alert("请输入密码!");
+                password.focus();
+                return;
+            }
+
+            // 2.发送 ajax 请求
+            jQuery.ajax({
+                type: "POST",
+                url: "/user/login",
+
+                // 想要发送 json 格式也可以
+                // contentType: 'application/json',
+                // data: JSON.stringify({
+                //     'username': username.val(),
+                //     'password': password.val()
+                // }),
+                
+                // 这里的数据发送是以对象的形式发送请求的
+                // 因此默认就是 query string 的格式
+                // 此处的 data 写成 json 格式的数据
+                data: {
+                    "username": username.val(),
+                    "password": password.val()
+                },
+                success: function(body) {
+                    if (body != null && body.data != null) {
+                        //alert('登录成功!');
+                        // 跳转到博客列表页
+                        location.href = 'blog_list.html';
+                    } else {
+                        // 登录失败
+                        alert("抱歉, 用户名或密码输入有误!");
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

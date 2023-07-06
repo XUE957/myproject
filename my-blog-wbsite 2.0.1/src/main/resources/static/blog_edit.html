@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客编辑页</title>
+
+    <!-- 引入 css 文件 -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/edit.css">
+
+    <!-- 不要忘记引入 js 文件 -->
+    <!-- 引入 editor.md 的依赖 -->
+    <link rel="stylesheet" href="editor.md/css/editormd.min.css" />
+    <script src="js/jquery.min.js"></script>
+    <script src="editor.md/lib/marked.min.js"></script>
+    <script src="editor.md/lib/prettify.min.js"></script>
+    <script src="editor.md/editormd.js"></script>
+</head>
+
+<body>
+    <div class="nav">
+        <!-- 导航栏 -->
+        <img src="image/log2.jpeg" alt="this is a log">
+        <span class="title">Blog分享小站</span>
+        <span class="spacer"></span>
+        <a href="blog_list.html">主页</a>
+        <a href="blog_edit.html">写博客</a>
+        <a href="javascript:logoutTag()">注销</a>
+    </div>
+
+    <!-- 这个就是博客编辑页的版心 -->
+    <div class="blog-edit-container">
+        <!-- 标题编辑区 -->
+        <div class="title">
+            <input type="text" value="在此处输入标题" id="title" name="title">
+            <input type="submit" value="发布文章" id="button" onclick="insertBlog()">
+        </div>
+        <!-- 用于放置 markdown 编辑器 -->
+        <div id="editor">
+            <!-- 为了能够进行 form 的提交, 这里需要搞一个 teextarea 多行编辑框, 借助这个编辑框来实现表单的提交 -->
+            <!-- 可以设置 editor.md 让编辑器把 markdown 内容也同步保存到这个隐藏的 textarea 中 -->
+            <textarea name="content" id="content" style="display: none"></textarea>
+        </div>
+    </div>
+
+    <script>
+        // 初始化编辑器
+        // 先创建一个 editor 对象. 
+        // editormd 相当于一个函数, 生成一个 editor 对象
+        // 第一个参数是指定要和哪个 html 的元素关联起来. 
+        // 生成的编辑器要放到哪个 html 标签中. 值就是 html 标签的 id
+        var editor = editormd("editor", {
+            // 这里的尺寸必须在这里设置. 设置样式会被 editormd 自动覆盖掉. 
+            width: "100%",
+            // 设定编辑器高度
+            height: "calc(100% - 50px)",
+            // 编辑器中的初始内容
+            markdown: "# 在此处编写博客正文",
+            // 指定 editor.md 依赖的插件路径
+            path: "editor.md/lib/",
+            // 这里要加上一个重要选项, 然后 editor.md 编辑器就会自动把用户输入的内容同步保存
+            saveHTMLtoTextarea: true
+        });
+
+
+        function insertBlog() {
+            // 1.对输入的内容进行非空和正确性效验
+            let title = jQuery("#title");
+            let content = jQuery("#content");
+
+            $.ajax({
+                type: "POST",
+                url: "/article/publish",
+                data: {
+                    "title": title.val(),
+                    "content": content.val()
+                },
+                success: function (body) {
+                    if (body != null) {
+                        if (body.data.code == -1) {
+                            // 发布文章失败!
+                            alert(body.data.msg);
+                            // 跳转到博客列表页
+                            location.href = 'blog_list.html';
+                        } else {
+                            alert('发布文章成功!');
+                            // 跳转到博客列表页
+                            location.href = 'blog_list.html';
+                        }
+                    } else {
+                        alert("后台程序出错!");
+                    }
+                }
+            });
+        }
+
+        // 注销功能
+        function logoutTag() {
+            if (confirm("确认注销?")) {
+
+                jQuery.ajax({
+                    type: "POST",
+                    url: "/user/logout",
+                    data: {},
+                    success: function (body) {
+                        if (body != null && body.code == 200) {
+                            location.href = "blog_login.html";
+                        }
+                    }
+                });
+            }
+        }
+
+
+        // 创建一个方法 getLoginStatus 来获取当前的登录状态
+        // 也就是获取当前登录者的信息
+        function getLoginStatus() {
+            $.ajax({
+                type: "GET",
+                url: "/user/status",
+                data: {},
+                success: function(body) {
+                    // 判断 body 是不是一个有效的对象 userId 是否为 0)
+                    if (body == null || body.code != 200) {
+                        // 登录失败, 则跳转到 登录界面
+                        alert("抱歉! 您当前尚未登录! 请登录!")
+                        location.assign('blog_login.html');
+                    } else {
+                        // 登录成功
+                        //alert("登陆成功! 当前用户是: " + body.data.username)
+                        console.log("登陆成功! 当前用户是: " + body.data.username);
+                    }
+                }
+            });
+        }
+        getLoginStatus();
+    </script>
+</body>
+
+</html>
